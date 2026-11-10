@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78a705a7289b07847b5793752d4f9439, type: 3}
+  m_Name: Enemy_Runner
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyTypeDefinition
+  baseWeight: 0.55
+  weightGrowthByProgress: 0.65
+  baseHealth: 14
+  healthGrowthPerSecond: 0.28
+  baseSpeed: 4.6
+  speedGrowthByProgress: 1.1
+  baseContactDamage: 8
+  damageGrowthByProgress: 5
+  scale: 0.9
+  scoreReward: 11
+  expReward: 8
+  color: {r: 1, g: 0.95, b: 0.25, a: 1}
+  randomizeColorPulse: 0
+  isBoss: 0

@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72db5a47eddaa4a468f9f25ca5966783, type: 3}
+  m_Name: GameBalanceSettings
+  m_EditorClassIdentifier: Assembly-CSharp::GameBalanceSettings
+  player:
+    baseMaxHealth: 100
+    baseMoveSpeed: 8.5
+    baseShotInterval: 0.2
+    baseProjectileSpeed: 24
+    baseProjectileDamage: 20
+    maxShotInterval: 0.08
+  match:
+    arenaRadius: 18
+    matchDurationSeconds: 180
+    initialSpawnDelay: 0.2
+    bossFirstSpawnDelay: 30
+    bossSpawnInterval: 45
+    minSpawnInterval: 0.3
+    initialSpawnInterval: 1.2
+    spawnIntervalDecayPerSecond: 0.02
+  progression:
+    baseExpToNextLevel: 40
+    expIncrementPerLevel: 25
+    levelUpHealAmount: 18
+    levelUpHealthBonus: 8
+    levelUpMoveSpeedBonus: 0.22
+    levelUpProjectileDamageBonus: 2
+    levelUpProjectileDamagePerLevel: 0.12
+    levelUpProjectileSpeedBonus: 0.32
+    levelUpShotIntervalReduction: 0.008
+  pooling:
+    projectilePoolSize: 240
+    enemyPoolSize: 120
+    effectPoolSize: 40
+  enemyTypes:
+  - {fileID: 11400000, guid: 6f01096c4ecea334c922b79238d1c1c4, type: 2}
+  - {fileID: 11400000, guid: 1604db7fc8d220240a550f630543e820, type: 2}
+  - {fileID: 11400000, guid: 387fd55c593e0284db952db32af96215, type: 2}
+  bossType: {fileID: 11400000, guid: 186188fb097dc5e4382e50c1304ab1db, type: 2}

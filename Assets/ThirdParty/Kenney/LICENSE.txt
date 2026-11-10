@@ -1,0 +1,6 @@
+﻿Kenney 3D assets (CC0 1.0 Universal / Public Domain)
+Source: https://github.com/shorepine/kenney (mirror of https://kenney.nl)
+Kits: 3d/mini-forest, 3d/mini-characters
+
+License: CC0 1.0 - https://creativecommons.org/publicdomain/zero/1.0/
+No attribution required, but credit to Kenney (https://kenney.nl) is appreciated.
