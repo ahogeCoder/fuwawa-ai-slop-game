@@ -184,6 +184,7 @@ public sealed class BonkBattleGameController : MonoBehaviour
         var light = lightGo.AddComponent<Light>();
         light.type = LightType.Directional;
         light.intensity = 1.35f;
+        light.shadows = LightShadows.None; // WebGL: CoreCopy/Shadow 関連エラー回避
         lightGo.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
 
         var ambGo = new GameObject("Ambient");
@@ -191,6 +192,7 @@ public sealed class BonkBattleGameController : MonoBehaviour
         amb.type = LightType.Directional;
         amb.intensity = 0.35f;
         amb.color = new Color(0.5f, 0.6f, 1f);
+        amb.shadows = LightShadows.None;
         ambGo.transform.rotation = Quaternion.Euler(-30f, 140f, 0f);
 
         BuildArena();
