@@ -112,24 +112,7 @@ public sealed class BonkPlayer : MonoBehaviour
 
     private Vector3 ReadMoveInput()
     {
-        var x = 0f;
-        var z = 0f;
-#if ENABLE_INPUT_SYSTEM
-        var kb = UnityEngine.InputSystem.Keyboard.current;
-        if (kb != null)
-        {
-            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) x -= 1f;
-            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) x += 1f;
-            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) z -= 1f;
-            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) z += 1f;
-        }
-#else
-        x = Input.GetAxisRaw("Horizontal");
-        z = Input.GetAxisRaw("Vertical");
-#endif
-        var v = new Vector3(x, 0f, z);
-        if (v.sqrMagnitude > 1f) v = v.normalized;
-        return v;
+        return GameInput.GetMoveVector();
     }
 
     [Header("Fall")]
@@ -197,17 +180,17 @@ public sealed class BonkPlayer : MonoBehaviour
                 pressed = true;
         }
         var mouse = UnityEngine.InputSystem.Mouse.current;
-        if (mouse != null)
-        {
-            if (mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame)
-                pressed = true;
-        }
+        if (mouse != null && (mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame))
+            pressed = true;
+        var touch = UnityEngine.InputSystem.Touchscreen.current;
+        if (touch != null && touch.primaryTouch.press.wasPressedThisFrame) pressed = true;
 #else
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.K)
             || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
             pressed = true;
         }
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) pressed = true;
 #endif
 
         if (pressed) TryBonk();
