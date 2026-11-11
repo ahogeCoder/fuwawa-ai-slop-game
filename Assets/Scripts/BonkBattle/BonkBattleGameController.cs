@@ -39,6 +39,12 @@ public sealed class BonkBattleGameController : MonoBehaviour
     [Tooltip("Inspector override. Empty = Resources/BaubauVoice/Single の一発短尺を使います")]
     public AudioClip[] baubauClipsOverride;
 
+    [Header("FX Materials (optional)")]
+    [Tooltip("未指定時は Resources/Materials からURP Unlitマテリアルをロード")]
+    public Material shockFxMaterial;
+    public Material slashFxMaterial;
+    public Material burstFxMaterial;
+
     [Header("Camera Follow")]
     public bool enableCameraFollow = true;
     public Vector3 cameraFollowOffset = new Vector3(0f, 9f, -6.5f);
@@ -366,8 +372,16 @@ public sealed class BonkBattleGameController : MonoBehaviour
         particles.Add(ps);
     }
 
+    private void EnsureFxMaterials()
+    {
+        if (shockFxMaterial == null) shockFxMaterial = Resources.Load<Material>("Materials/FX_Shock_Unlit");
+        if (slashFxMaterial == null) slashFxMaterial = Resources.Load<Material>("Materials/FX_Slash_Unlit");
+        if (burstFxMaterial == null) burstFxMaterial = Resources.Load<Material>("Materials/FX_Burst_Unlit");
+    }
+
     private void BuildAudio()
     {
+        EnsureFxMaterials();
         var root = new GameObject("AudioRoot");
         root.transform.SetParent(transform, false);
         bgmSource = root.AddComponent<AudioSource>();
@@ -1081,7 +1095,10 @@ public sealed class BonkBattleGameController : MonoBehaviour
         burst.transform.SetParent(worldRoot, true);
         burst.transform.position = position + Vector3.up * 0.5f;
         burst.transform.localScale = Vector3.one * 0.5f;
-        burst.GetComponent<Renderer>().material.color = new Color(1f, 0.85f, 0.3f);
+        var burstR = burst.GetComponent<Renderer>();
+        if (burstFxMaterial != null) burstR.material = new Material(burstFxMaterial);
+        var bc = burstFxMaterial != null ? new Color(1f, 0.85f, 0.3f, 1f) : burstR.material.color;
+        if (burstR.material.HasProperty("_BaseColor")) burstR.material.SetColor("_BaseColor", bc); else burstR.material.color = bc;
         Destroy(burst.GetComponent<Collider>());
         effectObjects.Add(burst);
         StartCoroutine(EffectFade(burst, 0.35f));
@@ -1106,44 +1123,50 @@ public sealed class BonkBattleGameController : MonoBehaviour
         sphere.transform.position = position;
         sphere.transform.localScale = Vector3.one * 0.5f;
         var rend = sphere.GetComponent<Renderer>();
-        // Unlitにして明るく、フェードで消える透明感を出す（Litのalphaだけでは透明にならないためUnlitへ）
-        rend.material.shader = Shader.Find("Universal Render Pipeline/Unlit");
-        rend.material.color = new Color(1f, 0.65f, 0.25f, 0.55f);
+        if (shockFxMaterial == null) EnsureFxMaterials();
+        if (shockFxMaterial != null) rend.material = new Material(shockFxMaterial);
+        else { var shader = Shader.Find("Universal Render Pipeline/Unlit"); if (shader != null) rend.material.shader = shader; }
+        var col = new Color(1f, 0.65f, 0.25f, 0.55f);
+        if (rend.material.HasProperty("_BaseColor")) rend.material.SetColor("_BaseColor", col); else rend.material.color = col;
         Destroy(sphere.GetComponent<Collider>());
         StartCoroutine(SphereExpandFade(sphere, maxScale, duration));
     }
 
     private void SpawnSlashAt(Vector3 position)
     {
-        // 斬撃スラッシュ: 前方向に斜めの板を一瞬表示して消す
         var slash = GameObject.CreatePrimitive(PrimitiveType.Cube);
         slash.name = "Slash";
         slash.transform.SetParent(worldRoot, true);
         slash.transform.position = position + Vector3.up * 0.7f;
         if (player != null)
-        {
             slash.transform.rotation = player.transform.rotation * Quaternion.Euler(25f, 0f, 55f);
-        }
         slash.transform.localScale = new Vector3(0.08f, 1.4f, 0.18f);
         var rend = slash.GetComponent<Renderer>();
-        rend.material.shader = Shader.Find("Universal Render Pipeline/Unlit");
-        rend.material.color = new Color(1f, 0.98f, 0.55f, 0.9f);
+        if (slashFxMaterial == null) EnsureFxMaterials();
+        if (slashFxMaterial != null) rend.material = new Material(slashFxMaterial);
+        else { var shader = Shader.Find("Universal Render Pipeline/Unlit"); if (shader != null) rend.material.shader = shader; }
+        var col = new Color(1f, 0.98f, 0.55f, 0.9f);
+        if (rend.material.HasProperty("_BaseColor")) rend.material.SetColor("_BaseColor", col); else rend.material.color = col;
         Destroy(slash.GetComponent<Collider>());
         StartCoroutine(SlashSpin(slash));
     }
 
     private IEnumerator SphereExpandFade(GameObject sphere, float maxScale, float duration)
     {
-        var rend = sphere.GetComponent<Renderer>();
+        var rend = sphere != null ? sphere.GetComponent<Renderer>() : null;
         var t = 0f;
         while (t < duration && sphere != null)
         {
             t += Time.deltaTime;
             var k = t / duration;
             sphere.transform.localScale = Vector3.one * (0.5f + k * maxScale);
-            var c = rend.material.color;
-            c.a = 0.55f * (1f - k);
-            rend.material.color = c;
+            if (rend != null)
+            {
+                var mat = rend.material;
+                var c = mat.HasProperty("_BaseColor") ? mat.GetColor("_BaseColor") : mat.color;
+                c.a = 0.55f * (1f - k);
+                if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", c); else mat.color = c;
+            }
             yield return null;
         }
         if (sphere != null) Destroy(sphere);
@@ -1164,14 +1187,19 @@ public sealed class BonkBattleGameController : MonoBehaviour
 
     private IEnumerator EffectFade(GameObject go, float duration)
     {
-        var r = go.GetComponent<Renderer>();
-        var start = r.material.color;
+        var r = go != null ? go.GetComponent<Renderer>() : null;
+        var mat = r != null ? r.material : null;
+        var start = mat != null ? (mat.HasProperty("_BaseColor") ? mat.GetColor("_BaseColor") : mat.color) : Color.white;
         var t = 0f;
         while (t < duration && go != null)
         {
             t += Time.deltaTime;
             var k = 1f - t / duration;
-            r.material.color = new Color(start.r, start.g, start.b, k);
+            if (mat != null)
+            {
+                var c = new Color(start.r, start.g, start.b, start.a * k);
+                if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", c); else mat.color = c;
+            }
             go.transform.localScale = Vector3.one * (0.5f * (0.5f + k));
             yield return null;
         }
