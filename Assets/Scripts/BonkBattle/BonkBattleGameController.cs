@@ -376,6 +376,10 @@ public sealed class BonkBattleGameController : MonoBehaviour
     private void Update()
     {
         TickShakeFlash(); TickCombo();
+        // enforce panel visibility per state (guards against duplicate/missed refs)
+        if (titlePanel != null) titlePanel.SetActive(state == GameState.Title);
+        if (resultPanel != null) resultPanel.SetActive(state == GameState.Result);
+        if (hudRoot != null) hudRoot.SetActive(state == GameState.Playing);
         if (state == GameState.Title) { if (GameInput.IsStartPressed()) StartRun(); return; }
         if (state == GameState.Result)
         {
