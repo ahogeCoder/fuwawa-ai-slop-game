@@ -43,7 +43,7 @@ public sealed class BonkPlayer : MonoBehaviour
         currentHealth = Mathf.Max(0f, currentHealth - damage);
         invulnTimer = invulnerableSeconds;
         // 被ダメでよろける（小さいノックバック）
-        if (body != null) body.linearVelocity = new Vector3(0f, 0f, 0f);
+        if (body != null && !body.isKinematic) body.linearVelocity = Vector3.zero;
         return currentHealth <= 0f;
     }
 

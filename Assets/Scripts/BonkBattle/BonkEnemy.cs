@@ -76,7 +76,7 @@ public sealed class BonkEnemy : MonoBehaviour
         }
 
         body = GetComponent<Rigidbody>();
-        if (body != null)
+        if (body != null && !body.isKinematic)
         {
             body.linearVelocity = Vector3.zero;
             body.angularVelocity = Vector3.zero;
@@ -198,7 +198,7 @@ public sealed class BonkEnemy : MonoBehaviour
     public void Deactivate()
     {
         isDead = true;
-        if (body != null)
+        if (body != null && !body.isKinematic)
         {
             body.linearVelocity = Vector3.zero;
             body.angularVelocity = Vector3.zero;
