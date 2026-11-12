@@ -230,9 +230,10 @@ public sealed class BonkBattleGameController : MonoBehaviour
             var visual = Instantiate(fuwawaVisualPrefab, go.transform);
             visual.name = "FuwawaVisual"; visual.transform.localPosition = Vector3.zero; visual.transform.localRotation = Quaternion.identity; visual.transform.localScale = Vector3.one;
             anim = visual.GetComponentInChildren<Animator>(true);
+            if (anim == null) anim = visual.AddComponent<Animator>();
             if (anim != null)
             {
-                anim.applyRootMotion = false; anim.enabled = true;
+                anim.applyRootMotion = false; anim.enabled = true; anim.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                 if (fuwawaAnimatorController != null) anim.runtimeAnimatorController = fuwawaAnimatorController;
             }
         }
