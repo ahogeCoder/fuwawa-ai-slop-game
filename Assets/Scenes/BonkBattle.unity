@@ -626,7 +626,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: e92003c6c112c5b438c30cab8dde255f, type: 3}
     m_FontSize: 24
     m_FontStyle: 0
     m_BestFit: 0
@@ -638,12 +638,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'Fuwawa Bonk Battle
-
-    Move: WASD/Arrows  Bonk: Space/J/Click
-
-    SPACE/ENTER/Click:
-    Start'
+  m_Text: "\u30D5\u30EF\u30EF\u304C30\u79D2\u3067\u4F55\u4F53\u6BB4\u308C\u308B\u304B\uFF01\nWASD
+    / \u77E2\u5370\u30AD\u30FC\uFF1A\u79FB\u52D5\u3000Space / J / \u30AF\u30EA\u30C3\u30AF\uFF1A\u6BB4\u308B\uFF08BAU!\uFF09\n\u6575\u306B\u89E6\u308C\u308B\u3068\u30C0\u30E1\u30FC\u30B8\uFF01\n\nSPACE
+    / ENTER / \u30AF\u30EA\u30C3\u30AF\uFF1A\u30B9\u30BF\u30FC\u30C8"
 --- !u!222 &395716665
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -689,17 +686,17 @@ MonoBehaviour:
   audioRoot: {fileID: 1830383717}
   hudRoot: {fileID: 65777011}
   titlePanel: {fileID: 522534487}
-  resultPanel: {fileID: 0}
-  timerText: {fileID: 0}
-  countText: {fileID: 0}
-  comboText: {fileID: 0}
+  resultPanel: {fileID: 799926905}
+  timerText: {fileID: 540523602}
+  countText: {fileID: 1146707286}
+  comboText: {fileID: 1022068889}
   titleBodyText: {fileID: 395716664}
-  resultHeadText: {fileID: 0}
-  resultBodyText: {fileID: 0}
-  hpText: {fileID: 0}
-  timerFill: {fileID: 0}
-  cooldownFill: {fileID: 0}
-  hpFill: {fileID: 0}
+  resultHeadText: {fileID: 1828784224}
+  resultBodyText: {fileID: 620306479}
+  hpText: {fileID: 1604051434}
+  timerFill: {fileID: 1745978222}
+  cooldownFill: {fileID: 96781172}
+  hpFill: {fileID: 526024381}
   flashOverlay: {fileID: 1663312555}
   bgmSource: {fileID: 1254143568}
   sfxSource: {fileID: 1828479463}
@@ -815,7 +812,7 @@ MonoBehaviour:
   attackClips:
   - {fileID: 8300000, guid: 3851bc842f3f97340b7a676ffe991e64, type: 3}
   playerPrefab: {fileID: 162017718072306787, guid: fa668ae8c8ff5cf4eae3e46ff7dffa7c, type: 3}
-  fuwawaVisualPrefab: {fileID: 919132149155446097, guid: 9ce01ec70bff0eb4cbaabe93a57d7e7f, type: 3}
+  fuwawaVisualPrefab: {fileID: 9188903641684629807, guid: 1d87a74514ce4434ab4c33805a96ff26, type: 3}
   fuwawaAnimatorController: {fileID: 9100000, guid: 2c61d712a0675054c865fbab9aba5732, type: 2}
   enemyPrefab: {fileID: 7733030565715469933, guid: 9fe7e3f9cbf19f649bea0e0d1eb90ac7, type: 3}
   enemyVisualPrefabs:
@@ -1364,7 +1361,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: e92003c6c112c5b438c30cab8dde255f, type: 3}
     m_FontSize: 44
     m_FontStyle: 0
     m_BestFit: 0
@@ -1533,7 +1530,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: e92003c6c112c5b438c30cab8dde255f, type: 3}
     m_FontSize: 34
     m_FontStyle: 0
     m_BestFit: 0
@@ -1702,7 +1699,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: e92003c6c112c5b438c30cab8dde255f, type: 3}
     m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
@@ -1714,7 +1711,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: ATTACK
+  m_Text: "\u653B\u6483"
 --- !u!222 &699342082
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2277,7 +2274,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: e92003c6c112c5b438c30cab8dde255f, type: 3}
     m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
@@ -2289,7 +2286,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: TIME
+  m_Text: "\u6B8B\u308A\u6642\u9593"
 --- !u!222 &965224521
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2552,7 +2549,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: e92003c6c112c5b438c30cab8dde255f, type: 3}
     m_FontSize: 34
     m_FontStyle: 0
     m_BestFit: 0
@@ -2938,7 +2935,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: e92003c6c112c5b438c30cab8dde255f, type: 3}
     m_FontSize: 34
     m_FontStyle: 0
     m_BestFit: 0
@@ -4485,7 +4482,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: e92003c6c112c5b438c30cab8dde255f, type: 3}
     m_FontSize: 24
     m_FontStyle: 0
     m_BestFit: 0
@@ -5054,7 +5051,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: e92003c6c112c5b438c30cab8dde255f, type: 3}
     m_FontSize: 54
     m_FontStyle: 0
     m_BestFit: 0
@@ -5508,7 +5505,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: e92003c6c112c5b438c30cab8dde255f, type: 3}
     m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
@@ -5587,7 +5584,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: e92003c6c112c5b438c30cab8dde255f, type: 3}
     m_FontSize: 54
     m_FontStyle: 0
     m_BestFit: 0
@@ -5599,7 +5596,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: BAUBAU BONK BATTLE
+  m_Text: "BAUBAU \u30DC\u30F3\u30AF\u30D0\u30C8\u30EB"
 --- !u!222 &2055445156
 CanvasRenderer:
   m_ObjectHideFlags: 0
