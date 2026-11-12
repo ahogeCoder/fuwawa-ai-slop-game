@@ -14,53 +14,53 @@ public sealed class BonkBattleGameController : MonoBehaviour
     private enum GameState { Title, Playing, Result }
 
     [Header("Scene References")]
-    [System.NonSerialized] private Camera sceneCamera;
-    [System.NonSerialized] private Transform worldRoot;
-    [System.NonSerialized] private Transform arenaRoot;
-    [System.NonSerialized] private Transform fxRoot;
-    [System.NonSerialized] private Transform spawnRoot;
-    [System.NonSerialized] private Transform audioRoot;
+    [SerializeField] private Camera sceneCamera;
+    [SerializeField] private Transform worldRoot;
+    [SerializeField] private Transform arenaRoot;
+    [SerializeField] private Transform fxRoot;
+    [SerializeField] private Transform spawnRoot;
+    [SerializeField] private Transform audioRoot;
 
     [Header("UI")]
-    [System.NonSerialized] private GameObject hudRoot;
-    [System.NonSerialized] private GameObject titlePanel;
-    [System.NonSerialized] private GameObject resultPanel;
-    [System.NonSerialized] private Text timerText;
-    [System.NonSerialized] private Text countText;
-    [System.NonSerialized] private Text comboText;
-    [System.NonSerialized] private Text titleBodyText;
-    [System.NonSerialized] private Text resultHeadText;
-    [System.NonSerialized] private Text resultBodyText;
-    [System.NonSerialized] private Text hpText;
-    [System.NonSerialized] private Image timerFill;
-    [System.NonSerialized] private Image cooldownFill;
-    [System.NonSerialized] private Image hpFill;
-    [System.NonSerialized] private Image flashOverlay;
+    [SerializeField] private GameObject hudRoot;
+    [SerializeField] private GameObject titlePanel;
+    [SerializeField] private GameObject resultPanel;
+    [SerializeField] private Text timerText;
+    [SerializeField] private Text countText;
+    [SerializeField] private Text comboText;
+    [SerializeField] private Text titleBodyText;
+    [SerializeField] private Text resultHeadText;
+    [SerializeField] private Text resultBodyText;
+    [SerializeField] private Text hpText;
+    [SerializeField] private Image timerFill;
+    [SerializeField] private Image cooldownFill;
+    [SerializeField] private Image hpFill;
+    [SerializeField] private Image flashOverlay;
 
     [Header("Audio")]
-    [System.NonSerialized] private AudioSource bgmSource;
-    [System.NonSerialized] private AudioSource sfxSource;
-    [System.NonSerialized] private AudioSource hurtSource;
-    [System.NonSerialized] private AudioSource attackSource;
-    [System.NonSerialized] private AudioClip bgmClip;
-    [System.NonSerialized] private AudioClip[] baubauClips;
-    [System.NonSerialized] private AudioClip[] hurtClips;
-    [System.NonSerialized] private AudioClip[] attackClips;
+    [SerializeField] private AudioSource bgmSource;
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioSource hurtSource;
+    [SerializeField] private AudioSource attackSource;
+    [SerializeField] private AudioClip bgmClip;
+    [SerializeField] private AudioClip[] baubauClips;
+    [SerializeField] private AudioClip[] hurtClips;
+    [SerializeField] private AudioClip[] attackClips;
 
     [Header("Prefabs / Assets")]
-    [System.NonSerialized] private GameObject playerPrefab;
-    [System.NonSerialized] private GameObject fuwawaVisualPrefab;
-    [System.NonSerialized] private RuntimeAnimatorController fuwawaAnimatorController;
-    [System.NonSerialized] private GameObject enemyPrefab;
-    [System.NonSerialized] private GameObject[] enemyVisualPrefabs;
-    [System.NonSerialized] private RuntimeAnimatorController enemyAnimatorController;
-    [System.NonSerialized] private GameObject fxBurstPrefab;
-    [System.NonSerialized] private GameObject fxShockPrefab;
-    [System.NonSerialized] private GameObject fxSlashPrefab;
-    [System.NonSerialized] private GameObject popupPrefab;
-    [System.NonSerialized] private Material fxBurstMaterial;
-    [System.NonSerialized] private Material fxShockMaterial;
-    [System.NonSerialized] private Material fxSlashMaterial;
+    [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private GameObject fuwawaVisualPrefab;
+    [SerializeField] private RuntimeAnimatorController fuwawaAnimatorController;
+    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private GameObject[] enemyVisualPrefabs;
+    [SerializeField] private RuntimeAnimatorController enemyAnimatorController;
+    [SerializeField] private GameObject fxBurstPrefab;
+    [SerializeField] private GameObject fxShockPrefab;
+    [SerializeField] private GameObject fxSlashPrefab;
+    [SerializeField] private GameObject popupPrefab;
+    [SerializeField] private Material fxBurstMaterial;
+    [SerializeField] private Material fxShockMaterial;
+    [SerializeField] private Material fxSlashMaterial;
 
     [Header("Match")]
     public float matchDurationSeconds = 30f;
@@ -117,92 +117,9 @@ public sealed class BonkBattleGameController : MonoBehaviour
     private void Awake()
     {
         best = PlayerPrefs.GetInt("BonkBattleBest", 0);
-        BindReferences();
-        if (sceneCamera == null) sceneCamera = Camera.main;
         if (sceneCamera != null) cameraBasePos = sceneCamera.transform.position;
         PrepareBgm();
         EnterTitle();
-    }
-
-    private void BindReferences()
-    {
-        // Scene references (objects pre-placed in scene)
-        if (sceneCamera == null) sceneCamera = Camera.main;
-        if (worldRoot == null) { var go = GameObject.Find("WorldRoot"); if (go) worldRoot = go.transform; }
-        if (arenaRoot == null) { var go = GameObject.Find("ArenaRoot"); if (go) arenaRoot = go.transform; }
-        if (fxRoot == null) { var go = GameObject.Find("FXRoot"); if (go) fxRoot = go.transform; }
-        if (spawnRoot == null) { var go = GameObject.Find("SpawnRoot"); if (go) spawnRoot = go.transform; }
-        if (audioRoot == null) { var go = GameObject.Find("AudioRoot"); if (go) audioRoot = go.transform; }
-
-        if (hudRoot == null) hudRoot = GameObject.Find("HUDRoot");
-        if (titlePanel == null) titlePanel = GameObject.Find("TitlePanel");
-        if (resultPanel == null) resultPanel = GameObject.Find("ResultPanel");
-        if (timerText == null) timerText = FindText("Timer");
-        if (countText == null) countText = FindText("Count");
-        if (comboText == null) comboText = FindText("Combo");
-        if (titleBodyText == null) titleBodyText = FindText("TitleBody");
-        if (resultHeadText == null) resultHeadText = FindText("ResultHead");
-        if (resultBodyText == null) resultBodyText = FindText("ResultBody");
-        if (hpText == null) hpText = FindText("HPText");
-        if (timerFill == null) timerFill = FindImage("TimerBarFill");
-        if (cooldownFill == null) cooldownFill = FindImage("CooldownBarFill");
-        if (hpFill == null) hpFill = FindImage("HPBarFill");
-        if (flashOverlay == null) flashOverlay = FindImage("Flash");
-
-        if (audioRoot != null)
-        {
-            if (bgmSource == null) bgmSource = FindAudio("BGM");
-            if (sfxSource == null) sfxSource = FindAudio("SFX");
-            if (hurtSource == null) hurtSource = FindAudio("Hurt");
-            if (attackSource == null) attackSource = FindAudio("Attack");
-        }
-
-        // Pre-existing assets (Resources)
-        if (bgmClip == null) bgmClip = Resources.Load<AudioClip>("BGM/BGM_Battle");
-        if (bgmClip == null) bgmClip = Resources.Load<AudioClip>("BGM/BGM_SpacyLoop");
-        if (baubauClips == null || baubauClips.Length == 0) baubauClips = LoadBaubauClips();
-        if (hurtClips == null || hurtClips.Length == 0) hurtClips = Resources.LoadAll<AudioClip>("Hurt");
-        if (attackClips == null || attackClips.Length == 0) attackClips = Resources.LoadAll<AudioClip>("Attack");
-
-        if (playerPrefab == null) playerPrefab = Resources.Load<GameObject>("Prefabs/BonkBattle/BonkPlayerBase");
-        if (enemyPrefab == null) enemyPrefab = Resources.Load<GameObject>("Prefabs/BonkBattle/BonkEnemyBase");
-        if (fuwawaVisualPrefab == null) fuwawaVisualPrefab = Resources.Load<GameObject>("Fuwawa/fuwawa");
-        if (fuwawaAnimatorController == null) fuwawaAnimatorController = Resources.Load<RuntimeAnimatorController>("Fuwawa/FuwawaAnimator");
-        if (enemyAnimatorController == null) enemyAnimatorController = Resources.Load<RuntimeAnimatorController>("Animators/CharacterAnimator");
-        if (enemyVisualPrefabs == null || enemyVisualPrefabs.Length == 0) enemyVisualPrefabs = Resources.LoadAll<GameObject>("Kenney");
-
-        if (fxBurstPrefab == null) fxBurstPrefab = Resources.Load<GameObject>("Prefabs/BonkBattle/FX_Burst");
-        if (fxShockPrefab == null) fxShockPrefab = Resources.Load<GameObject>("Prefabs/BonkBattle/FX_Shock");
-        if (fxSlashPrefab == null) fxSlashPrefab = Resources.Load<GameObject>("Prefabs/BonkBattle/FX_Slash");
-        if (popupPrefab == null) popupPrefab = Resources.Load<GameObject>("Prefabs/BonkBattle/PopupText");
-        if (fxBurstMaterial == null) fxBurstMaterial = Resources.Load<Material>("Materials/FX_Burst_Unlit");
-        if (fxShockMaterial == null) fxShockMaterial = Resources.Load<Material>("Materials/FX_Shock_Unlit");
-        if (fxSlashMaterial == null) fxSlashMaterial = Resources.Load<Material>("Materials/FX_Slash_Unlit");
-    }
-
-    private Text FindText(string name) { var go = GameObject.Find(name); return go != null ? go.GetComponent<Text>() : null; }
-    private Image FindImage(string name) { var go = GameObject.Find(name); return go != null ? go.GetComponent<Image>() : null; }
-    private AudioSource FindAudio(string name)
-    {
-        if (audioRoot == null) return null;
-        var t = audioRoot.Find(name);
-        return t != null ? t.GetComponent<AudioSource>() : null;
-    }
-
-    private AudioClip[] LoadBaubauClips()
-    {
-        var allBau = new List<AudioClip>();
-        foreach (var folder in new[] { "BaubauVoice/Cut", "BaubauVoice/FuwawaFull" })
-        {
-            var clips = Resources.LoadAll<AudioClip>(folder);
-            if (clips == null) continue;
-            foreach (var c in clips) { if (c != null && !allBau.Contains(c)) allBau.Add(c); }
-        }
-        if (allBau.Count > 0) return allBau.ToArray();
-        var all = Resources.LoadAll<AudioClip>("BaubauVoice");
-        var shortOnes = new List<AudioClip>();
-        if (all != null) foreach (var c in all) { if (c != null && c.length <= 4f) shortOnes.Add(c); }
-        return shortOnes.Count > 0 ? shortOnes.ToArray() : (all ?? new AudioClip[0]);
     }
 
     private void PrepareBgm()
@@ -519,4 +436,5 @@ public sealed class BonkBattleGameController : MonoBehaviour
         if (hpText != null && player != null) hpText.text = $"HP {Mathf.CeilToInt(player.CurrentHealth)}";
     }
 }
+
 
