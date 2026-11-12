@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// BonkBattle enemy. Seeks the player with a wobble, dies in one bonk (counter game rule).
-/// Handles knockback / spin / pop on death for flashy feedback.
+/// BonkBattle enemy. Seeks the player, takes one bonk, handles knockback/feedback.
+/// References are assigned explicitly; no runtime discovery.
 /// </summary>
 [RequireComponent(typeof(Collider))]
 public sealed class BonkEnemy : MonoBehaviour
@@ -21,11 +21,13 @@ public sealed class BonkEnemy : MonoBehaviour
     public float contactRange = 1.4f;
     public float contactCooldown = 0.8f;
 
+    [Header("References")]
+    [SerializeField] private Rigidbody body;
+    [SerializeField] private Collider hitCollider;
+    [SerializeField] private Transform visualRoot;
+    [SerializeField] private Animator animator;
+
     private BonkBattleGameController game;
-    private Rigidbody body;
-    private Renderer cachedRenderer;
-    private Animator animator;
-    private Transform visualRoot;
     private float speed;
     private float wobbleSeed;
     private float aliveTime;
@@ -42,6 +44,19 @@ public sealed class BonkEnemy : MonoBehaviour
     public bool IsDead => isDead;
     public bool IsActive => !isDead && game != null && game.IsPlaying;
 
+    public void SetReferences(Rigidbody rb, Collider col, Transform visual, Animator anim)
+    {
+        if (rb != null) body = rb;
+        if (col != null) hitCollider = col;
+        if (visual != null) visualRoot = visual;
+        if (anim != null)
+        {
+            animator = anim;
+            animator.applyRootMotion = false;
+            animator.SetBool("isWalking", true);
+        }
+    }
+
     public void Initialize(BonkBattleGameController controller, float moveSpeed, float scale, Color color)
     {
         game = controller;
@@ -54,50 +69,16 @@ public sealed class BonkEnemy : MonoBehaviour
         bobSeed = Random.Range(0f, Mathf.PI * 2f);
         baseScale = scale;
 
-        // Visual child takes the scale so root collider stays stable
-        visualRoot = transform.Find("Visual");
         if (visualRoot != null)
             visualRoot.localScale = Vector3.one * scale;
         else
             transform.localScale = Vector3.one * scale;
-
-        cachedRenderer = GetComponentInChildren<Renderer>(true);
-        // 球体プレースホルダーのときだけ色を塗る（Kenneyはバラバラになるので上書きしない）
-        if (visualRoot == null && cachedRenderer != null)
-        {
-            cachedRenderer.material.color = color;
-        }
-
-        animator = GetComponentInChildren<Animator>(true);
-        if (animator != null)
-        {
-            animator.applyRootMotion = false;
-            animator.SetBool("isWalking", true);
-        }
-
-        body = GetComponent<Rigidbody>();
-        if (body != null && !body.isKinematic)
-        {
-            body.linearVelocity = Vector3.zero;
-            body.angularVelocity = Vector3.zero;
-        }
-    }
-
-    private void Awake()
-    {
-        body = GetComponent<Rigidbody>();
-        cachedRenderer = GetComponentInChildren<Renderer>(true);
-        // 球体は浮かせ、キャラモデルは足元合わせ
-        var hasVisual = transform.Find("Visual") != null;
-        var y = hasVisual ? 0f : 0.6f;
-        transform.position = new Vector3(transform.position.x, y, transform.position.z);
     }
 
     private void Update()
     {
         if (isDead)
         {
-            // fly away after bonk
             transform.position += knockbackDir * (10f * Time.deltaTime);
             transform.position += Vector3.up * (4f * Time.deltaTime);
             transform.Rotate(0f, spinSpeed * Time.deltaTime, spinSpeed * 0.6f * Time.deltaTime);
@@ -105,10 +86,7 @@ public sealed class BonkEnemy : MonoBehaviour
             return;
         }
 
-        if (game == null || !game.IsPlaying)
-        {
-            return;
-        }
+        if (game == null || !game.IsPlaying) return;
 
         aliveTime += Time.deltaTime;
         var playerPos = game.PlayerPosition;
@@ -118,13 +96,11 @@ public sealed class BonkEnemy : MonoBehaviour
         if (toPlayer.sqrMagnitude > 0.05f)
         {
             var dir = toPlayer.normalized;
-            // wobble perpendicular for crowd feel
             var perp = new Vector3(-dir.z, 0f, dir.x);
             var wobble = Mathf.Sin(aliveTime * 7f + wobbleSeed) * 0.35f;
             var move = (dir + perp * wobble).normalized * speed;
             transform.position += move * Time.deltaTime;
 
-            // ステージの床を超えたら落下。落下中は重力で下へ
             float dist = Mathf.Sqrt(transform.position.x * transform.position.x + transform.position.z * transform.position.z);
             if (dist > game.ArenaRadius + 0.5f)
             {
@@ -140,7 +116,7 @@ public sealed class BonkEnemy : MonoBehaviour
             }
             else
             {
-                var groundY = (visualRoot != null || transform.Find("Visual") != null) ? 0f : 0.6f;
+                var groundY = visualRoot != null ? 0f : 0.6f;
                 transform.position = new Vector3(transform.position.x, groundY, transform.position.z);
                 if (toPlayer.sqrMagnitude > 0.01f)
                 {
@@ -150,7 +126,6 @@ public sealed class BonkEnemy : MonoBehaviour
             }
         }
 
-        // pulse - flashy heartbeat scale + procedural bob (Animatorが無い/不一致時も歩行感が出る)
         var pulse = 1f + Mathf.Sin(aliveTime * 10f + wobbleSeed) * 0.06f;
         var bob = Mathf.Abs(Mathf.Sin(aliveTime * 12f + bobSeed)) * 0.08f;
         if (visualRoot != null)
@@ -170,7 +145,6 @@ public sealed class BonkEnemy : MonoBehaviour
         {
             contactTimer = contactCooldown;
             game.DamagePlayer(contactDamage);
-            // 自分も小突くように少し跳ねて無敵機関とずらす
             transform.position += -toPlayer.normalized * 0.4f;
         }
     }
@@ -189,8 +163,7 @@ public sealed class BonkEnemy : MonoBehaviour
             body.AddTorque(Vector3.up * 10f, ForceMode.Impulse);
         }
 
-        var col = GetComponent<Collider>();
-        if (col != null) col.enabled = false;
+        if (hitCollider != null) hitCollider.enabled = false;
 
         game.ReportEnemyBonked(this, transform.position);
     }
@@ -203,7 +176,6 @@ public sealed class BonkEnemy : MonoBehaviour
             body.linearVelocity = Vector3.zero;
             body.angularVelocity = Vector3.zero;
         }
-        var col = GetComponent<Collider>();
-        if (col != null) col.enabled = false;
+        if (hitCollider != null) hitCollider.enabled = false;
     }
 }

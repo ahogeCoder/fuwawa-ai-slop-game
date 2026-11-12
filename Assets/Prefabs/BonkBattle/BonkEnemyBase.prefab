@@ -97,3 +97,7 @@ MonoBehaviour:
   contactDamage: 10
   contactRange: 1.4
   contactCooldown: 0.8
+  body: {fileID: 8137761948494799551}
+  hitCollider: {fileID: 4810098388881073860}
+  visualRoot: {fileID: 0}
+  animator: {fileID: 0}

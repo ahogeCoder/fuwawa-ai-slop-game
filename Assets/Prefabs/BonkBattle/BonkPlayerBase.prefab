@@ -106,3 +106,5 @@ MonoBehaviour:
   fallGravity: -20
   fallRespawnY: -6
   fallDamage: 20
+  animator: {fileID: 0}
+  body: {fileID: 2779798724911523311}

@@ -222,20 +222,26 @@ public sealed class BonkBattleGameController : MonoBehaviour
         if (playerPrefab == null) return;
         var go = Instantiate(playerPrefab, SpawnParent);
         go.name = "FuwawaPlayer"; go.transform.position = Vector3.zero; go.transform.rotation = Quaternion.identity; go.transform.localScale = Vector3.one * 1.6f;
+        var rb = go.GetComponent<Rigidbody>();
+        if (rb != null) { rb.isKinematic = true; rb.useGravity = false; rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY; rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; }
+        Animator anim = null;
         if (fuwawaVisualPrefab != null)
         {
             var visual = Instantiate(fuwawaVisualPrefab, go.transform);
             visual.name = "FuwawaVisual"; visual.transform.localPosition = Vector3.zero; visual.transform.localRotation = Quaternion.identity; visual.transform.localScale = Vector3.one;
-            var anim = visual.GetComponentInChildren<Animator>(true);
+            anim = visual.GetComponentInChildren<Animator>(true);
             if (anim != null)
             {
                 anim.applyRootMotion = false; anim.enabled = true;
                 if (fuwawaAnimatorController != null) anim.runtimeAnimatorController = fuwawaAnimatorController;
             }
         }
-        var rb = go.GetComponent<Rigidbody>(); if (rb != null) { rb.isKinematic = true; rb.useGravity = false; rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY; rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; }
-        var bp = go.GetComponent<BonkPlayer>(); if (bp == null) bp = go.AddComponent<BonkPlayer>();
-        bp.arenaRadius = arenaRadius; bp.floorRadius = arenaRadius; bp.Initialize(this); player = bp;
+        var bp = go.GetComponent<BonkPlayer>();
+        if (bp == null) bp = go.AddComponent<BonkPlayer>();
+        bp.arenaRadius = arenaRadius; bp.floorRadius = arenaRadius;
+        bp.SetReferences(anim, rb);
+        bp.Initialize(this);
+        player = bp;
     }
 
     private void SpawnEnemy()
@@ -247,17 +253,21 @@ public sealed class BonkBattleGameController : MonoBehaviour
         var pos = new Vector3(Mathf.Cos(angle) * radius, 0f, Mathf.Sin(angle) * radius);
         if (Random.value < 0.4f) { pos = PlayerPosition + new Vector3(Random.Range(-6f, 6f), 0f, Random.Range(-6f, 6f)); pos = Vector3.ClampMagnitude(new Vector3(pos.x, 0f, pos.z), arenaRadius - 1f); pos.y = 0f; }
         go.transform.position = pos;
+        Transform visualRoot = null; Animator anim = null;
         if (enemyVisualPrefabs != null && enemyVisualPrefabs.Length > 0)
         {
             var vp = enemyVisualPrefabs[Random.Range(0, enemyVisualPrefabs.Length)];
             if (vp != null)
             {
                 var visual = Instantiate(vp, go.transform); visual.name = "Visual"; visual.transform.localPosition = Vector3.zero; visual.transform.localScale = Vector3.one * 1.15f;
-                var anim = visual.GetComponentInChildren<Animator>(true);
+                visualRoot = visual.transform;
+                anim = visual.GetComponentInChildren<Animator>(true);
                 if (anim != null) { anim.applyRootMotion = false; if (enemyAnimatorController != null) anim.runtimeAnimatorController = enemyAnimatorController; anim.SetBool("isWalking", true); }
             }
         }
-        var enemy = go.GetComponent<BonkEnemy>(); if (enemy == null) enemy = go.AddComponent<BonkEnemy>();
+        var enemy = go.GetComponent<BonkEnemy>();
+        if (enemy == null) enemy = go.AddComponent<BonkEnemy>();
+        enemy.SetReferences(go.GetComponent<Rigidbody>(), go.GetComponent<Collider>(), visualRoot, anim);
         var progress = Mathf.Clamp01(elapsed / matchDurationSeconds);
         var speed = enemyBaseSpeed + progress * enemySpeedGrowth + Random.Range(-0.3f, 0.5f);
         var scale = Random.Range(3.4f, 4.4f);
@@ -338,18 +348,35 @@ public sealed class BonkBattleGameController : MonoBehaviour
         var go = Instantiate(prefab, fxRoot);
         go.transform.position = pos; if (rot.HasValue) go.transform.rotation = rot.Value;
         var rend = go.GetComponentInChildren<Renderer>();
-        if (rend != null && mat != null) rend.material = new Material(mat);
-        if (spin) StartCoroutine(SlashSpin(go, duration)); else StartCoroutine(FxExpandFade(go, duration, maxScale));
+        if (rend != null && mat != null) rend.sharedMaterial = mat;
+        if (spin) StartCoroutine(SlashSpin(go, duration)); else StartCoroutine(FxExpandFade(go, rend, duration, maxScale));
     }
 
-    private IEnumerator FxExpandFade(GameObject go, float duration, float maxScale)
+    private IEnumerator FxExpandFade(GameObject go, Renderer rend, float duration, float maxScale)
     {
-        var rend = go != null ? go.GetComponentInChildren<Renderer>() : null; var t = 0f;
+        var t = 0f;
+        MaterialPropertyBlock block = null;
+        Color baseColor = Color.white;
+        int colorId = Shader.PropertyToID("_BaseColor");
+        int colorId2 = Shader.PropertyToID("_Color");
+        if (rend != null)
+        {
+            block = new MaterialPropertyBlock();
+            var m = rend.sharedMaterial;
+            if (m != null) baseColor = m.HasProperty(colorId) ? m.GetColor(colorId) : (m.HasProperty(colorId2) ? m.GetColor(colorId2) : m.color);
+        }
         while (t < duration && go != null)
         {
             t += Time.deltaTime; var k = Mathf.Clamp01(t / duration);
             go.transform.localScale = Vector3.one * (0.5f + k * maxScale);
-            if (rend != null && rend.material != null) { var m = rend.material; var c = m.HasProperty("_BaseColor") ? m.GetColor("_BaseColor") : m.color; c.a = (1f - k) * c.a; if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c); else m.color = c; }
+            if (rend != null && block != null)
+            {
+                var c = baseColor; c.a = baseColor.a * (1f - k);
+                rend.GetPropertyBlock(block);
+                block.SetColor(colorId, c);
+                block.SetColor(colorId2, c);
+                rend.SetPropertyBlock(block);
+            }
             yield return null;
         }
         if (go != null) Destroy(go);
