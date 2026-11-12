@@ -687,7 +687,7 @@ MonoBehaviour:
   fxRoot: {fileID: 1846788298}
   spawnRoot: {fileID: 1643083353}
   audioRoot: {fileID: 1830383717}
-  hudRoot: {fileID: 0}
+  hudRoot: {fileID: 65777011}
   titlePanel: {fileID: 522534487}
   resultPanel: {fileID: 0}
   timerText: {fileID: 0}
