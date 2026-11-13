@@ -32,7 +32,24 @@ jobs:
       - name: Ensure nojekyll
         run: touch docs/.nojekyll
 
+      # 古い WebGL 成果物（ハッシュ付きファイル）は使われないので削除して
+      # アーティファクトのサイズ膨胀を防ぐ
+      - name: Clean stale WebGL artifacts
+        run: |
+          cd docs/Build
+          grep -oE '[0-9a-f]{32}\.(unityweb|js)' ../index.html | sort -u > /tmp/keep.txt || true
+          for f in *; do
+            if ! grep -qxF "$f" /tmp/keep.txt 2>/dev/null; then
+              echo "removing stale file: $f"
+              rm -f "$f"
+            fi
+          done
+          ls -la
+
       - uses: actions/configure-pages@v5
+        with:
+          # Pages が未有効でも自動で有効化する
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
