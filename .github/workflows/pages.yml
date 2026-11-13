@@ -37,14 +37,18 @@ jobs:
       - name: Clean stale WebGL artifacts
         run: |
           cd docs/Build
-          grep -oE '[0-9a-f]{32}\.(unityweb|js)' ../index.html | sort -u > /tmp/keep.txt || true
+          # index.html が参照しているファイル名を抽出（例: abc123...unityweb）
+          grep -oE 'buildUrl \+ "/[^"]+"' ../index.html \
+            | sed -E 's#.*buildUrl \+ "/##; s#"$##' \
+            | sort -u > /tmp/keep.txt || true
+          echo "--- keeping ---"; cat /tmp/keep.txt
           for f in *; do
             if ! grep -qxF "$f" /tmp/keep.txt 2>/dev/null; then
               echo "removing stale file: $f"
               rm -f "$f"
             fi
           done
-          ls -la
+          echo "--- remaining ---"; ls -la
 
       - uses: actions/configure-pages@v5
         with:
