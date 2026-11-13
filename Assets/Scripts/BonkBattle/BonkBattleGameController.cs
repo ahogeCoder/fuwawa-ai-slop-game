@@ -107,6 +107,8 @@ public sealed class BonkBattleGameController : MonoBehaviour
     private int best;
     private float shakeTime;
     private float shakeDuration;
+    /// <summary>現在のシェイク量（shakeStrength は基準値として保持し、ここで上書きしない）</summary>
+    private float shakeAmount;
     private float hitstopTimer;
     private float flashTimer;
     private float resultLockTimer;
@@ -133,6 +135,7 @@ public sealed class BonkBattleGameController : MonoBehaviour
     private void EnterTitle()
     {
         state = GameState.Title; bonkedCount = 0; combo = 0; maxCombo = 0; elapsed = 0f;
+        ResetShake();
         ClearEnemies(); SpawnPlayer();
         ApplyPanelState();
         UpdateHud();
@@ -140,15 +143,26 @@ public sealed class BonkBattleGameController : MonoBehaviour
 
     private void StartRun()
     {
+        ResetShake();
         ClearEnemies(); SpawnPlayer();
         state = GameState.Playing; bonkedCount = 0; combo = 0; comboTimer = 0f; maxCombo = 0; elapsed = 0f; spawnTimer = 0.15f;
         ApplyPanelState();
         StartBgm(); UpdateHud();
     }
 
+    /// <summary>セッション切换時にシェイク量とヒットストップを初期化する</summary>
+    private void ResetShake()
+    {
+        shakeTime = 0f;
+        shakeAmount = 0f;
+        hitstopTimer = 0f;
+        Time.timeScale = 1f;
+    }
+
     private void EnterResult(bool isGameOver = false)
     {
         state = GameState.Result; resultLockTimer = resultInputLockSeconds; StopBgm(); ClearEnemies();
+        ResetShake();
         if (bonkedCount > best) { best = bonkedCount; PlayerPrefs.SetInt("BonkBattleBest", best); PlayerPrefs.Save(); }
         ApplyPanelState();
         if (resultHeadText != null) { resultHeadText.text = isGameOver ? "GAME OVER" : "TIME UP!"; resultHeadText.color = isGameOver ? new Color(1f, 0.35f, 0.35f) : Color.white; }
@@ -228,7 +242,9 @@ public sealed class BonkBattleGameController : MonoBehaviour
         if (fuwawaVisualPrefab != null)
         {
             var visual = Instantiate(fuwawaVisualPrefab, go.transform);
-            visual.name = "FuwawaVisual"; visual.transform.localPosition = Vector3.zero; visual.transform.localRotation = Quaternion.identity; visual.transform.localScale = Vector3.one;
+            visual.name = "FuwawaVisual";
+            // Transform は Prefab 側の設定（位置・回転・スケール）をそのまま使う
+            // アニメータの取得と設定（Prefab に SkinnedMeshRenderer がアタッチ済みと仮定）
             anim = visual.GetComponentInChildren<Animator>(true);
             if (anim != null)
             {
@@ -409,7 +425,7 @@ public sealed class BonkBattleGameController : MonoBehaviour
         if (go != null) Destroy(go);
     }
 
-    private void TriggerShake(float duration, float strength) { if (!enableScreenShake) return; shakeDuration = duration; shakeTime = duration; shakeStrength = strength; }
+    private void TriggerShake(float duration, float strength) { if (!enableScreenShake) return; shakeDuration = duration; shakeTime = duration; shakeAmount = strength; }
     private void TriggerHitstop() { if (!enableHitstop) return; hitstopTimer = hitstopSeconds; Time.timeScale = 0.08f; }
     private void TriggerFlash(float alpha, float duration) { if (flashOverlay == null) return; flashTimer = duration; var c = flashOverlay.color; c.a = alpha; flashOverlay.color = c; }
 
@@ -432,7 +448,7 @@ public sealed class BonkBattleGameController : MonoBehaviour
         var desired = focus + offset; float clampR = arenaRadius + 4f; desired.x = Mathf.Clamp(desired.x, -clampR, clampR); desired.z = Mathf.Clamp(desired.z, -clampR, clampR);
         var smooth = Mathf.Max(0.1f, cameraFollowSmooth); cameraBasePos = Vector3.Lerp(cameraBasePos, desired, Time.unscaledDeltaTime * smooth);
         var shakeOffset = Vector3.zero;
-        if (shakeTime > 0f) { shakeTime -= Time.unscaledDeltaTime; var k = shakeDuration > 0f ? Mathf.Max(0f, shakeTime / shakeDuration) : 0f; shakeOffset = Random.insideUnitSphere * (shakeStrength * k); shakeOffset.y = 0f; }
+        if (shakeTime > 0f) { shakeTime -= Time.unscaledDeltaTime; var k = shakeDuration > 0f ? Mathf.Max(0f, shakeTime / shakeDuration) : 0f; shakeOffset = Random.insideUnitSphere * (shakeAmount * k); shakeOffset.y = 0f; }
         sceneCamera.transform.position = cameraBasePos + shakeOffset; sceneCamera.transform.LookAt(focus);
     }
 
@@ -460,7 +476,8 @@ public sealed class BonkBattleGameController : MonoBehaviour
         SetBarFill(timerFill, 1f - elapsed / matchDurationSeconds);
         if (player != null) SetBarFill(cooldownFill, 1f - player.CooldownNormalized);
         if (player != null) SetBarFill(hpFill, player.CurrentHealth / player.MaxHealth);
-        if (hpText != null && player != null) hpText.text = $"HP {Mathf.CeilToInt(player.CurrentHealth)}";
+        // 「HP」ラベルは別途あるため、ここでは数値のみ表示する（重複表示防止）
+        if (hpText != null && player != null) hpText.text = $"{Mathf.CeilToInt(player.CurrentHealth)}";
     }
 }
 

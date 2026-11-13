@@ -34,6 +34,8 @@ desktop.ini
 
 # Build output (Pages 配信用の docs/ はコミットする)
 Builds/
+# ただし docs/ 配下の WebGL ビルド成果物は Pages 公開に必要なので除外しない
+!docs/Build/
 
 # このプロジェクトの作業用ゴミ（必要なら外す）
 _tmp_uberwolf/

@@ -1,22 +1,22 @@
 using UnityEngine;
 
-#if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem;
-#endif
-
+/// <summary>
+/// Input handling supporting both Legacy Input and Input System package.
+/// Uses #if ENABLE_INPUT_SYSTEM to switch between modes at compile time.
+/// </summary>
 public static class GameInput
 {
     /// <summary>WebGL/タッチでも開始できるよう、クリック・タップも開始入力として扱う</summary>
     private static bool IsConfirmPointerPressed()
     {
 #if ENABLE_INPUT_SYSTEM
-        var mouse = Mouse.current;
+        var mouse = UnityEngine.InputSystem.Mouse.current;
         if (mouse != null && mouse.leftButton.wasPressedThisFrame)
         {
             return true;
         }
 
-        var touch = Touchscreen.current;
+        var touch = UnityEngine.InputSystem.Touchscreen.current;
         if (touch != null && touch.primaryTouch.press.wasPressedThisFrame)
         {
             return true;
@@ -36,7 +36,7 @@ public static class GameInput
         }
 
 #if ENABLE_INPUT_SYSTEM
-        var keyboard = Keyboard.current;
+        var keyboard = UnityEngine.InputSystem.Keyboard.current;
         if (keyboard == null)
         {
             return false;
@@ -58,7 +58,7 @@ public static class GameInput
         }
 
 #if ENABLE_INPUT_SYSTEM
-        var keyboard = Keyboard.current;
+        var keyboard = UnityEngine.InputSystem.Keyboard.current;
         if (keyboard == null)
         {
             return false;
@@ -76,7 +76,7 @@ public static class GameInput
     public static Vector3 GetMoveVector()
     {
 #if ENABLE_INPUT_SYSTEM
-        var keyboard = Keyboard.current;
+        var keyboard = UnityEngine.InputSystem.Keyboard.current;
         if (keyboard == null)
         {
             return Vector3.zero;
@@ -107,6 +107,7 @@ public static class GameInput
 
         return Vector3.ClampMagnitude(new Vector3(x, 0f, z), 1f);
 #else
+        // Legacy Input: use "Horizontal" and "Vertical" axes from Input Manager
         var input = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
         return Vector3.ClampMagnitude(input, 1f);
 #endif

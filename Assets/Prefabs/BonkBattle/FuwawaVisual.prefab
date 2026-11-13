@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9ce01ec70bff0eb4cbaabe93a57d7e7f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.189
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9ce01ec70bff0eb4cbaabe93a57d7e7f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -49,9 +49,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7237891761941940598, guid: 9ce01ec70bff0eb4cbaabe93a57d7e7f, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -7237891761941940598, guid: 9ce01ec70bff0eb4cbaabe93a57d7e7f, type: 3}
       propertyPath: m_UpdateWhenOffscreen
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -7237891761941940598, guid: 9ce01ec70bff0eb4cbaabe93a57d7e7f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 022ca835341932c40b6fde41ae6f1387, type: 2}
     - target: {fileID: 919132149155446097, guid: 9ce01ec70bff0eb4cbaabe93a57d7e7f, type: 3}
       propertyPath: m_Name
       value: FuwawaVisual
@@ -78,7 +86,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6070783293811418943}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
+  m_Avatar: {fileID: 9000000, guid: 9ce01ec70bff0eb4cbaabe93a57d7e7f, type: 3}
   m_Controller: {fileID: 9100000, guid: 2c61d712a0675054c865fbab9aba5732, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
